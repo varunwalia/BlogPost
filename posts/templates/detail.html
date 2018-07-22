@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load urlify %}
+{% load crispy_forms_tags %}
+{% block title %}
+Posts Detail || {{block.super}}
+{% endblock %}
+
+
+{% block h1 %}
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}> {% if 'html_safe' in message.tags %} {{ message | safe}} {% else %} {{message}} {% endif %}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+<div class="col-sm-6 col-sm-offset-3">
+
+	{% if queryset.image %}
+	<img src="{{queryset.image.url}}" class="img-responsive" style="width:100%" />
+	{% endif %}
+
+<h1>{{queryset.title}}  <small>  <small>  <small> {% if queryset.draft %} <span style='color:red'>Draft: </span> {% endif %} {{queryset.publish}}  </small></small> </small> </h1>
+
+{% if queryset.user.get_full_name%}
+<p> Author : {{ queryset.user.get_full_name | capfirst}}</p>
+{% endif %}
+
+<p>
+<div class="fb-like" data-href="{{request.build_absolute_uri}}" data-layout="button_count" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
+</p>
+
+<hr />
+
+<!-- 
+<a href="https://www.facebook.com/sharer/sharer.php?u={{request.build_absolute_uri }}">
+Facebook
+</a>
+
+<a href="https://twitter.com/home?status={{queryset.content |urlify}}%20{{request.build_absolute_uri }}">
+Twitter
+</a>
+
+<a href='https://plus.google.com/share?url={{request.build_absolute_uri }}'>
+
+<a href="https://www.linkedin.com/shareArticle?mini=true&url={{request.build_absolute_uri }}/&title={{queryset.title}}&summary={{share_string}}&source={{request.build_absolute_uri }}">
+Linkedin
+</a>
+
+
+<a href="http://www.reddit.com/submit?url={{request.build_absolute_uri}}&title={{queryset.title}}"> Reddit </a> -->
+
+<div class="row">
+<div class="col-sm-12 ">
+
+<div class="post-detail-item">   {{queryset.get_markdown}}  </div>
+
+{% lorem 20 w %} <br />
+
+
+
+<hr />
+<br />
+ 
+ <div> 
+
+ 	<p class="lead"> Comments </p>
+
+ 	<form method="POST" action="">
+ 		{% csrf_token %}
+ 		{{comment_form|crispy}}
+
+ 		<input type="submit" value = "Post Comment" class="btn btn-default">
+ 			
+ 	</form>
+
+ 	{% for comment in comments %}
+
+ 	<blockquote>
+ 		<p>  {{ comment.content  }} </p>
+ 		<footer> 	via {{comment.user}} | {{comment.timestamp | timesince}} </footer>
+
+ 	<form method="POST" action="">
+ 		{% csrf_token %}
+ 		{{comment_form|crispy}}
+
+ 		<input type="submit" value = "Reply" class="btn btn-default">
+ 			
+ 	</form> 
+
+
+ 	</blockquote>
+<hr />
+ 	
+{% endfor %} 
+
+ </div>
+
+<!-- <div class="fb-comments" data-href="{{request.build_absolute_uri}}" data-numposts="5"></div> -->
+
+</div>
+
+</div>
+
+</div>
+{% endblock %}

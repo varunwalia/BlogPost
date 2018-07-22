@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}
+Posts List || {{block.super}}
+{% endblock %}
+
+
+{% block h1 %}
+
+<div class="col-sm-6 col-sm-offset-3">
+
+<h2> List </h2>
+<form method="GET" action="" class="row">
+  <div class="col-sm-7">
+  <div class="input-group" >
+  <input class="form-control" type="text" name = 'q' placeholder = "Search Posts" value = "{{ request.GET.q }}" />
+  <span class="input-group-btn">
+    <!-- <input class="btn btn-defaul t" type="submit" value="Search" /> -->
+    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+  </span>
+</div>
+</div>
+</form>
+
+<br>
+
+
+{% for post in queryset %}
+
+ 
+
+<div class="row">
+
+
+  <div class="col-sm-12">
+    <div class="img-thumbnail">
+      {% if post.image %}
+      <img src="{{post.image.url}}" class="img-responsive" style="width:100%" />
+      {% endif %}
+      <div class="caption  post-detail-item">
+        {% if post.draft %} <h3> Staff only: Draft </h3> {% endif %} {% if post.publish > today %} <h3> Future draft </h3> {% endif %}
+        <h3><a href = {{post.get_absolute_url}} >  {{post.title}} </a> <small>{% if post.draft %} <span style='color:red'>Draft: </span> {% endif %} {{post.publish}} </small></h3>
+        {% if post.user.get_full_name%}
+<p> Author : {{ post.user.get_full_name }}</p>
+{% endif %}
+        <p class="">{{post.get_markdown | truncatewords_html:9 }}  </p>
+        <p><a href={{post.get_absolute_url}} class="btn btn-primary" role="button">View</a>  </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<hr />
+
+<!-- {% cycle "" "<div class='col-sm-12'> </div> <hr/> <div class='row'> </div> "%}
+ -->
+{% endfor %}
+
+<a href="#" style=""> <span class="glyphicon glyphicon-upload " style="font-size: 25px ; text-align: center;"></span> </a>
+<hr>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if queryset.has_previous %}
+            <a href="?{{page_request_var}}={{ queryset.previous_page_number }}{% if request.GET.q%} &q={{request.GET.q}} {% endif %}"> &laquo</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ queryset.number }} of {{ queryset.paginator.num_pages }}.
+        </span>
+
+        {% if queryset.has_next %}
+            <a href="?{{page_request_var}}={{ queryset.next_page_number }}{% if request.GET.q%} &q={{request.GET.q}} {% endif %}">&raquo</a>
+        {% endif %}
+    </span>
+</div>
+
+</div>
+
+{% endblock %}
